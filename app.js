@@ -2,13 +2,8 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
 const app = express();
-const _=require("lodash");
+const _= require("lodash");
 const mongoose = require("mongoose");
-
-
-
-
-
 
 app.set("view engine", "ejs");
 
@@ -16,7 +11,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(express.static("public"));
 
-mongoose.connect("mongodb+srv://Puru-admin:vaijayanti@cluster0-b87ym.mongodb.net/todolistDB", { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect("mongodb+srv://Puru-admin:vaijayanti@cluster0-b87ym.mongodb.net/todolistDB?retryWrites=true&w=majority", { useNewUrlParser: true, useUnifiedTopology: true });
 
 const itemsSchema = {
    name: String,
@@ -71,7 +66,7 @@ app.get("/", function (req, res) {
 
 app.get("/:customListName", function (req, res) {
    const customListName = _.capitalize(req.params.customListName);
- List.findOne({name:customListName}, function(err, foundList){
+   List.findOne({name:customListName}, function(err, foundList){
     if(!err){
        if(!foundList){
           //create a new list
@@ -115,10 +110,10 @@ app.post("/", function (req, res) {
 
 app.post("/delete", function (req, res) {
    const checkedItemId = (req.body.checkbox);
-  const listName=req.body.listName;
+   const listName=req.body.listName;
 
-  if(listName==="Today"){
-   Item.findByIdAndRemove(checkedItemId, function (err) {
+   if(listName==="Today"){
+      Item.findByIdAndRemove(checkedItemId, function (err) {
       if (!err) {
          console.log("Successfully deleted checked item");
          res.redirect("/");
@@ -134,28 +129,21 @@ app.post("/delete", function (req, res) {
   
 });
 
-
-
-
 app.post("/work", function (req, res) {
-
-
    const item = req.body.newItem;
    workItems.push(item);
    res.redirect("/work");
 });
 
-
 app.get("/about", function (req, res) {
    res.render("about");
 });
 
-let port= process.env.PORT;
-if(port= null || port==""){
-   port =3000;
+let port = process.env.PORT;
+if(port == null || port === ""){
+   port = 3000;
 }
-app.listen(port);
 
 app.listen(port, function () {
-   console.log("Server is running on the local port 3000");
+   console.log(`Server is running on the local port ${port}`);
 });
